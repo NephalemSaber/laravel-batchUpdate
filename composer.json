@@ -1,0 +1,22 @@
+{
+    "name": "sabercode/laravel-batch-update",
+    "description": "laravel批量更新mysql",
+    "type": "l",
+    "require": {
+        "php": "^7.4",
+        "laravel/framework": "^5.5"
+    },
+    "license": "MT",
+    "autoload": {
+        "psr-4": {
+            "Sabercode\\LaravelBatchUpdate\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "sabercode",
+            "email": "sabercode@vip.qq.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}

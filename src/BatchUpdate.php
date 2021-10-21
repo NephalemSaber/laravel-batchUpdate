@@ -2,66 +2,40 @@
 namespace Sabercode\LaravelBatchUpdate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class BatchUpdate
 {
 
-    protected $table;
-    protected $data;
-    protected $whereField;
-    protected $error;
+    protected static $self;
 
-
-    protected function setError($error)
+    public function __construct()
     {
-        $this->error = $error;
+        self::$self = new self();
     }
 
-    private function getError()
-    {
-        return $this->error;
-    }
-
-    public function setTable($table)
-    {
-        if(!is_string($table) || !$table){
-            $this->setError('批量更新-表名错误');
-            return false;
-        }
-        $this->table = $table;
-        return $this;
-    }
-
-    public function setData($data)
-    {
-        if(!is_array($data) || !$data){
-            $this->setError('批量更新-更新数据错误');
-            return false;
-        }
-        $this->data = $data;
-        return $this;
-    }
-
-    public function setWhereField($whereField)
-    {
-        if(!is_string($whereField) || !$whereField){
-            $this->setError('批量更新-更新条件错误');
-            return false;
-        }
-        $this->whereField = $whereField;
-        return $this;
-    }
 
     /**
+     * @param $table
+     * @param $data
+     * @param $whereField
      * @return false|void
      */
-    public function doUpdate()
+    public static function doUpdate($table,$data,$whereField)
     {
-        if($this->getError()){
-            Log::error($this->getError());
+        if (!Schema::hasTable($table) ){
+            Log::error('批量更新-表不存在');
             return false;
         }
-        $sql = $this->getUpdateSql($this->table,$this->data,$this->whereField);
+        if(!Schema::hasColumn($table, $whereField)){
+            Log::error('批量更新-更新条件不存在');
+            return false;
+        }
+        if(!is_array($data) && !$data){
+            Log::error('批量更新-更新数据错误');
+            return false;
+        }
+        $sql = self::$self->getUpdateSql($table,$data,$whereField);
         DB::update($sql);
     }
 
@@ -75,7 +49,7 @@ class BatchUpdate
      * @param string $field string 值不同的条件，默认为id
      * @return bool|string
      */
-    public function getUpdateSql($table, $data, $field, $params = [])
+    private function getUpdateSql($table, $data, $field, $params = [])
     {
         if (!is_array($data) || !$field || !is_array($params)) {
             return false;

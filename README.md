@@ -2,6 +2,7 @@
 
 ## 环境要求
 * PHP > 7.0
+* composer > 2.0
 * laravel > 5.5
 
 # 安装

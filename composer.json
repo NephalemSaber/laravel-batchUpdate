@@ -1,5 +1,5 @@
 {
-    "name": "sabercode/laravel-batch-update",
+    "name": "sabercode/laravel-batchUpdate",
     "description": "laravel批量更新mysql",
     "type": "l",
     "require": {

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 class BatchUpdate
 {
 
-    protected static $self;
+    protected static object $self;
 
     public function __construct()
     {
@@ -19,9 +19,10 @@ class BatchUpdate
      * @param $table
      * @param $data
      * @param $whereField
+     * @param $whereSame
      * @return false|void
      */
-    public static function doUpdate($table,$data,$whereField)
+    public static function doUpdate($table,$data,$whereField,$whereSame)
     {
         if (!Schema::hasTable($table) ){
             Log::error('批量更新-表不存在');
@@ -35,7 +36,7 @@ class BatchUpdate
             Log::error('批量更新-更新数据错误');
             return false;
         }
-        $sql = self::$self->getUpdateSql($table,$data,$whereField);
+        $sql = self::$self->getUpdateSql($table,$data,$whereField,$whereSame);
         DB::update($sql);
     }
 
@@ -43,13 +44,13 @@ class BatchUpdate
 
     /**
      * 组装批量更新sql
-     * @param $table string 需要更新的表
-     * @param $data array 待更新的数据，二维数组格式
+     * @param string $table 需要更新的表
+     * @param array $data 待更新的数据，二维数组格式
      * @param array $params array 值相同的条件，键值对应的一维数组
      * @param string $field string 值不同的条件，默认为id
      * @return bool|string
      */
-    private function getUpdateSql($table, $data, $field, $params = [])
+    private function getUpdateSql(string $table, array $data, string $field,array $params = [])
     {
         if (!is_array($data) || !$field || !is_array($params)) {
             return false;
@@ -75,8 +76,8 @@ class BatchUpdate
      * @param $field string 列名
      * @return string sql语句
      */
-   private function parseUpdate($data, $field)
-    {
+   private function parseUpdate($data, $field): string
+   {
         $sql = '';
         $keys = array_keys(current($data));
         foreach ($keys as $column) {
@@ -92,11 +93,11 @@ class BatchUpdate
     }
 
     /**
-     * 解析where条件
+     * 解析额外where条件
      * @param $params
      * @return string
      */
-    private function parseParams($params)
+    private function parseParams($params): string
     {
         $where = [];
         foreach ($params as $key => $value) {
